@@ -1,0 +1,64 @@
+{
+  "name": "nx-node-sea",
+  "$schema": "../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "nx-node-sea/src",
+  "projectType": "library",
+  "release": {
+    "version": {
+      "generatorOptions": {
+        "packageRoot": "dist/{projectRoot}",
+        "currentVersionResolver": "git-tag"
+      }
+    }
+  },
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/nx-node-sea",
+        "main": "nx-node-sea/src/index.ts",
+        "tsConfig": "nx-node-sea/tsconfig.lib.json",
+        "assets": [
+          "nx-node-sea/*.md",
+          {
+            "input": "./nx-node-sea/src",
+            "glob": "**/!(*.ts)",
+            "output": "./src"
+          },
+          {
+            "input": "./nx-node-sea/src",
+            "glob": "**/*.d.ts",
+            "output": "./src"
+          },
+          {
+            "input": "./nx-node-sea",
+            "glob": "generators.json",
+            "output": "."
+          },
+          {
+            "input": "./nx-node-sea",
+            "glob": "executors.json",
+            "output": "."
+          }
+        ]
+      }
+    },
+    "nx-release-publish": {
+      "options": {
+        "packageRoot": "dist/{projectRoot}"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "nx-node-sea/jest.config.ts"
+      }
+    }
+  }
+}
