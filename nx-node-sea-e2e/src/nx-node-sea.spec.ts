@@ -1,9 +1,16 @@
-import { execSync } from 'child_process';
-import { join, dirname } from 'path';
-import { mkdirSync, rmSync } from 'fs';
+import { execSync, spawn } from 'node:child_process';
+import { once } from 'node:events';
+import { mkdirSync, readdirSync, rmSync } from 'node:fs';
+import { join, dirname } from 'node:path';
+import { inspect } from 'node:util';
+import { NxJsonConfiguration, readJsonFile, writeJsonFile } from '@nx/devkit';
+
+import type { NodeSeaPluginOptions, NodeSeaOptions } from 'nx-node-sea';
+
 
 describe('nx-node-sea', () => {
   let projectDirectory: string;
+  let seaConfig: NodeSeaOptions;
 
   beforeAll(() => {
     projectDirectory = createTestProject();
@@ -15,7 +22,9 @@ describe('nx-node-sea', () => {
       stdio: 'inherit',
       env: process.env,
     });
-  });
+    updateNxJson(projectDirectory);
+    seaConfig = createSeaConfig(projectDirectory);
+  }, 10_000);
 
   afterAll(() => {
     // Cleanup the test project
@@ -32,6 +41,29 @@ describe('nx-node-sea', () => {
       stdio: 'inherit',
     });
   });
+
+  it('should build the SEA', async () => {
+    const cp = spawn('nx', ['run', 'sea-build'], {
+      cwd: projectDirectory,
+      stdio: 'inherit',
+      timeout: 10_000,
+    });
+
+    cp.stdout?.on('data', (data) => {
+      console.log(data.trim().toString());
+    });
+    cp.stderr?.on('data', (data) => {
+      console.warn(data.trim().toString());
+    });
+    const [code] = await once(cp, 'exit');
+
+    expect(code).toBe(0);
+    const outputDirectory = dirname(seaConfig.output);
+    const files = readdirSync(outputDirectory);
+    expect(files).toContain('test.blob');
+    expect(files).toContain('node');
+    // TODO: run the SEA and check the output
+  }, 15_000);
 });
 
 /**
@@ -51,8 +83,9 @@ function createTestProject() {
     recursive: true,
   });
 
+  // we need a node.js project to generate the single executable application (SEA)
   execSync(
-    `npx --yes create-nx-workspace@latest ${projectName} --preset apps --nxCloud=skip --no-interactive`,
+    `npx --yes create-nx-workspace@latest ${projectName} --preset node-standalone --nxCloud=skip --no-interactive`,
     {
       cwd: dirname(projectDirectory),
       stdio: 'inherit',
@@ -60,6 +93,32 @@ function createTestProject() {
     }
   );
   console.log(`Created test project in "${projectDirectory}"`);
-
+  console.log(
+    inspect(readJsonFile(join(projectDirectory, 'project.json')), { depth: 3 })
+  );
   return projectDirectory;
+}
+
+function updateNxJson(projectDirectory: string): void {
+  const nxJson: NxJsonConfiguration = readJsonFile(
+    join(projectDirectory, 'nx.json')
+  );
+  nxJson.plugins ??= [];
+  nxJson.plugins.push({
+    plugin: 'nx-node-sea',
+    options: {
+      seaTargetName: 'sea-build',
+      buildTarget: 'build',
+    } satisfies NodeSeaPluginOptions,
+  });
+  writeJsonFile(join(projectDirectory, 'nx.json'), nxJson);
+}
+
+function createSeaConfig(projectDirectory: string): NodeSeaOptions {
+  const seaConfig = {
+    main: 'dist/test-project/main.js',
+    output: 'dist/test-project/main.blob',
+  };
+  writeJsonFile(join(projectDirectory, 'sea-config.json'), seaConfig);
+  return seaConfig;
 }
