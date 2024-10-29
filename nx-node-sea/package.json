@@ -5,7 +5,8 @@
     "tslib": "^2.3.0",
     "@nx/devkit": "20.0.6",
     "nx": "20.0.6",
-    "semver": "^7.6.3"
+    "semver": "^7.6.3",
+    "postject": "^1.0.0-alpha.6"
   },
   "type": "commonjs",
   "main": "./src/index.js",

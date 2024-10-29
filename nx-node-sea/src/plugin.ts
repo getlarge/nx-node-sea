@@ -106,7 +106,7 @@ export const createNodesV2: CreateNodesV2<Partial<NodeSeaPluginOptions>> = [
                   node: [
                     { runtime: 'node --version' },
                     { env: 'NODE_OPTIONS' },
-                    { externalDependencies: [] },
+                    { externalDependencies: ['postject'] },
                   ],
                 },
                 metadata: {
@@ -146,7 +146,8 @@ function getSeaTargetConfiguration(
       '{projectRoot}/sea-config.json',
       'production',
     ],
-    outputs: [blobPath, nodeBinPath],
+    // TODO: check if blobPath is relative, if yes append workspaceRoot
+    outputs: [`{workspaceRoot}/${blobPath}`, `{workspaceRoot}/${nodeBinPath}`],
     dependsOn: [options.buildTarget],
     executor: 'nx:run-commands',
     options: {

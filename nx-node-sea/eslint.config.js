@@ -8,6 +8,11 @@ module.exports = [
       '@nx/dependency-checks': [
         'error',
         {
+          buildTargets: ['build'],
+          checkMissingDependencies: true,
+          checkObsoleteDependencies: true,
+          checkVersionMismatches: true,
+          ignoredDependencies: ['postject'],
           ignoredFiles: ['{projectRoot}/eslint.config.{js,cjs,mjs}'],
         },
       ],
