@@ -1,12 +1,11 @@
 import { execSync, spawn } from 'node:child_process';
 import { once } from 'node:events';
 import { mkdirSync, readdirSync, rmSync } from 'node:fs';
-import { join, dirname } from 'node:path';
+import { join, dirname, basename } from 'node:path';
 import { inspect } from 'node:util';
 import { NxJsonConfiguration, readJsonFile, writeJsonFile } from '@nx/devkit';
 
 import type { NodeSeaPluginOptions, NodeSeaOptions } from 'nx-node-sea';
-
 
 describe('nx-node-sea', () => {
   let projectDirectory: string;
@@ -48,7 +47,6 @@ describe('nx-node-sea', () => {
       stdio: 'inherit',
       timeout: 10_000,
     });
-
     cp.stdout?.on('data', (data) => {
       console.log(data.trim().toString());
     });
@@ -58,12 +56,13 @@ describe('nx-node-sea', () => {
     const [code] = await once(cp, 'exit');
 
     expect(code).toBe(0);
-    const outputDirectory = dirname(seaConfig.output);
+    const outputDirectory = join(projectDirectory, dirname(seaConfig.output));
     const files = readdirSync(outputDirectory);
-    expect(files).toContain('test.blob');
+    expect(files).toContain(basename(seaConfig.output));
     expect(files).toContain('node');
-    // TODO: run the SEA and check the output
   }, 15_000);
+
+  it.todo('should run the SEA');
 });
 
 /**
