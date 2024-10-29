@@ -46,7 +46,10 @@ export interface NodeSeaPluginOptions {
 }
 
 function getCachePath(options: NodeSeaPluginOptions) {
-  return join(workspaceDataDirectory, `sea-${hashObject(options)}.hash`);
+  return join(
+    workspaceDataDirectory,
+    `sea-${platform}-${hashObject(options)}.hash`
+  );
 }
 
 function readTargetsCache(
@@ -100,11 +103,10 @@ export const createNodesV2: CreateNodesV2<Partial<NodeSeaPluginOptions>> = [
           return {
             projects: {
               [projectRoot]: {
-                // TODO: check if namedInputs work in this Nx version, otherwise create an issue
-                // see https://discord.com/channels/1143497901675401286/1297849630859464754/1297849630859464754
                 namedInputs: {
                   node: [
                     { runtime: 'node --version' },
+                    { runtime: 'node --print "process.arch"' },
                     { env: 'NODE_OPTIONS' },
                     { externalDependencies: ['postject'] },
                   ],
@@ -138,14 +140,7 @@ function getSeaTargetConfiguration(
   // TODO: add nodeSeaOptions.assets to inputs??
   return {
     cache: true,
-    inputs: [
-      // { runtime: 'node --version' },
-      // { env: 'NODE_OPTIONS' },
-      // { externalDependencies: [] },
-      'node',
-      '{projectRoot}/sea-config.json',
-      'production',
-    ],
+    inputs: ['node', '{projectRoot}/sea-config.json', 'production'],
     // TODO: check if blobPath is relative, if yes append workspaceRoot
     outputs: [`{workspaceRoot}/${blobPath}`, `{workspaceRoot}/${nodeBinPath}`],
     dependsOn: [options.buildTarget],
