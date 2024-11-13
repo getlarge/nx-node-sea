@@ -45,8 +45,18 @@
     }
   },
   "release": {
+    "changelog": {
+      "projectChangelogs": {
+        "createRelease": "github"
+      }
+    },
     "version": {
+      "conventionalCommits": true,
       "preVersionCommand": "npx nx run-many -t build"
+    },
+    "git": {
+      "commit": true,
+      "tag": true
     }
   }
 }
