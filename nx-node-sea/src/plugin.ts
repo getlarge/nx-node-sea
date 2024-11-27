@@ -55,6 +55,9 @@ function getCachePath(options: NodeSeaPluginOptions) {
 function readTargetsCache(
   cachePath: string
 ): Record<string, Record<string, TargetConfiguration>> {
+  if (process.env.NX_CACHE_PROJECT_GRAPH === 'false') {
+    return {};
+  }
   if (existsSync(cachePath)) {
     return readJsonFile(cachePath);
   }
@@ -65,6 +68,9 @@ function writeTargetsToCache(
   cachePath: string,
   targets: Record<string, Record<string, TargetConfiguration>>
 ) {
+  if (process.env.NX_CACHE_PROJECT_GRAPH === 'false') {
+    return;
+  }
   writeJsonFile(cachePath, targets);
 }
 
