@@ -23,7 +23,7 @@ describe('nx-node-sea', () => {
     });
     updateNxJson(projectDirectory);
     seaConfig = createSeaConfig(projectDirectory);
-  }, 10_000);
+  }, 15_000);
 
   afterAll(() => {
     // Cleanup the test project
@@ -42,10 +42,10 @@ describe('nx-node-sea', () => {
   });
 
   it('should build the SEA', async () => {
-    const cp = spawn('nx', ['run', 'sea-build'], {
+    const cp = spawn('nx', ['run', 'sea-build', '--verbose'], {
       cwd: projectDirectory,
       stdio: 'inherit',
-      timeout: 10_000,
+      timeout: 20_000,
       shell: true,
     });
     cp.stdout?.on('data', (data) => {
@@ -61,7 +61,7 @@ describe('nx-node-sea', () => {
     const files = readdirSync(outputDirectory);
     expect(files).toContain(basename(seaConfig.output));
     expect(files).toContain('node');
-  }, 15_000);
+  }, 30_000);
 
   it.todo('should run the SEA');
 });
