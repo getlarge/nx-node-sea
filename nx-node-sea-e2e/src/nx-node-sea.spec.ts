@@ -16,7 +16,7 @@ describe('nx-node-sea', () => {
 
     // The plugin has been built and published to a local registry in the jest globalSetup
     // Install the plugin built with the latest source code into the test repo
-    execSync(`npm install nx-node-sea@e2e`, {
+    execSync(`npm install @getlarge/nx-node-sea@e2e`, {
       cwd: projectDirectory,
       stdio: 'inherit',
       env: process.env,
@@ -35,7 +35,7 @@ describe('nx-node-sea', () => {
 
   it('should be installed', () => {
     // npm ls will fail if the package is not installed properly
-    execSync('npm ls nx-node-sea', {
+    execSync('npm ls @getlarge/nx-node-sea', {
       cwd: projectDirectory,
       stdio: 'inherit',
     });
@@ -104,7 +104,7 @@ function updateNxJson(projectDirectory: string): void {
   );
   nxJson.plugins ??= [];
   nxJson.plugins.push({
-    plugin: 'nx-node-sea',
+    plugin: '@getlarge/nx-node-sea',
     options: {
       seaTargetName: 'sea-build',
       buildTarget: 'build',
