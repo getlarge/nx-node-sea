@@ -144,9 +144,23 @@ function getSeaTargetConfiguration(
   const blobPath = nodeSeaOptions.output;
   const nodeBinPath = join(dirname(blobPath), 'node');
   // TODO: add nodeSeaOptions.assets to inputs??
+
   return {
     cache: true,
-    inputs: ['node', '{projectRoot}/sea-config.json', 'production'],
+    inputs: [
+      'node',
+      '{projectRoot}/sea-config.json',
+      'production',
+      {
+        externalDependencies: ['postject'],
+      },
+      {
+        runtime: 'node --version',
+      },
+      {
+        runtime: 'node --print "process.arch"',
+      },
+    ],
     // TODO: check if blobPath is relative, if yes append workspaceRoot
     outputs: [`{workspaceRoot}/${blobPath}`, `{workspaceRoot}/${nodeBinPath}`],
     dependsOn: [options.buildTarget],
@@ -154,20 +168,44 @@ function getSeaTargetConfiguration(
     options: {
       /**
        * @see https://nodejs.org/api/single-executable-applications.html
-       * @todo update commands for win support
        */
-      commands: [
-        'node --experimental-sea-config {projectRoot}/sea-config.json',
-        `cp $(command -v node) ${nodeBinPath}`,
-        platform === 'darwin' && `codesign --remove-signature ${nodeBinPath}`,
-        platform === 'darwin'
-          ? `npx postject ${nodeBinPath} NODE_SEA_BLOB ${blobPath} --sentinel-fuse NODE_SEA_FUSE_fce680ab2cc467b6e072b8b5df1996b2 --macho-segment-name NODE_SEA`
-          : `npx postject ${nodeBinPath} NODE_SEA_BLOB ${blobPath} --sentinel-fuse NODE_SEA_FUSE_fce680ab2cc467b6e072b8b5df1996b2`,
-        platform === 'darwin' && `codesign --sign - ${nodeBinPath}`,
-      ],
+      commands: getSeaCommands({ nodeBinPath, blobPath }),
       parallel: false,
     },
   };
+}
+
+function getSeaCommands(options: {
+  nodeBinPath: string;
+  blobPath: string;
+  sign?: boolean;
+}): string[] {
+  const { nodeBinPath, blobPath, sign = false } = options;
+  if (platform === 'darwin') {
+    return [
+      'node --experimental-sea-config {projectRoot}/sea-config.json',
+      `cp $(command -v node) ${nodeBinPath}`,
+      `codesign --remove-signature ${nodeBinPath}`,
+      `npx postject ${nodeBinPath} NODE_SEA_BLOB ${blobPath} --sentinel-fuse NODE_SEA_FUSE_fce680ab2cc467b6e072b8b5df1996b2 --macho-segment-name NODE_SEA`,
+      `codesign --sign - ${nodeBinPath}`,
+    ];
+  } else if (platform === 'linux') {
+    return [
+      'node --experimental-sea-config {projectRoot}/sea-config.json',
+      `cp $(command -v node) ${nodeBinPath}`,
+      `npx postject ${nodeBinPath} NODE_SEA_BLOB ${blobPath} --sentinel-fuse NODE_SEA_FUSE_fce680ab2cc467b6e072b8b5df1996b2`,
+    ];
+  } else if (platform === 'win32') {
+    return [
+      `node -e "require('fs').copyFileSync(process.execPath, '${nodeBinPath}.exe')"`,
+      `signtool remove /s '${nodeBinPath}.exe' `,
+      // TODO: check if powershell or command prompt
+      `npx postject ${nodeBinPath}.exe NODE_SEA_BLOB ${blobPath} ^ --sentinel-fuse NODE_SEA_FUSE_fce680ab2cc467b6e072b8b5df1996b2`,
+      ...(sign ? [`signtool sign /fd SHA256 ${nodeBinPath}.exe`] : []),
+    ];
+  } else {
+    throw new Error(`Unsupported platform: ${platform}`);
+  }
 }
 
 function getNodeVersion() {
