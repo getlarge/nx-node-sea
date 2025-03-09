@@ -1,6 +1,6 @@
 import { execSync, spawn } from 'node:child_process';
 import { once } from 'node:events';
-import { mkdirSync, readdirSync, rmSync } from 'node:fs';
+import { mkdirSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { join, dirname, basename } from 'node:path';
 import { inspect } from 'node:util';
 import { NxJsonConfiguration, readJsonFile, writeJsonFile } from '@nx/devkit';
@@ -96,6 +96,16 @@ function createTestProject() {
   console.log(
     inspect(readJsonFile(join(projectDirectory, 'project.json')), { depth: 3 })
   );
+
+  // mock the build output
+  mkdirSync(join(projectDirectory, 'dist', projectName), {
+    recursive: true,
+  });
+  writeFileSync(
+    join(projectDirectory, 'dist', projectName, 'main.js'),
+    'console.log("Hello World");'
+  );
+
   return projectDirectory;
 }
 
