@@ -200,7 +200,7 @@ function getSeaCommands(options: {
       `node -e "require('fs').copyFileSync(process.execPath, '${nodeBinPath}.exe')"`,
       `signtool remove /s '${nodeBinPath}.exe' `,
       // TODO: check if powershell or command prompt
-      `npx postject ${nodeBinPath}.exe NODE_SEA_BLOB ${blobPath} ^ --sentinel-fuse NODE_SEA_FUSE_fce680ab2cc467b6e072b8b5df1996b2`,
+      `npx postject ${nodeBinPath}.exe NODE_SEA_BLOB ${blobPath} \` --sentinel-fuse NODE_SEA_FUSE_fce680ab2cc467b6e072b8b5df1996b2`,
       ...(sign ? [`signtool sign /fd SHA256 ${nodeBinPath}.exe`] : []),
     ];
   } else {
