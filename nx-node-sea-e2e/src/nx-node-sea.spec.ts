@@ -46,6 +46,7 @@ describe('nx-node-sea', () => {
       cwd: projectDirectory,
       stdio: 'inherit',
       timeout: 10_000,
+      shell: true,
     });
     cp.stdout?.on('data', (data) => {
       console.log(data.trim().toString());
