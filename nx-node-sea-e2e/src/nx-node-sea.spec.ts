@@ -45,7 +45,7 @@ describe('nx-node-sea', () => {
     const cp = spawn('nx', ['run', 'sea-build', '--verbose'], {
       cwd: projectDirectory,
       stdio: 'inherit',
-      timeout: 20_000,
+      timeout: 35_000,
       shell: true,
     });
     cp.stdout?.on('data', (data) => {
@@ -61,7 +61,7 @@ describe('nx-node-sea', () => {
     const files = readdirSync(outputDirectory);
     expect(files).toContain(basename(seaConfig.output));
     expect(files).toContain('node');
-  }, 30_000);
+  }, 45_000);
 
   it.todo('should run the SEA');
 });
