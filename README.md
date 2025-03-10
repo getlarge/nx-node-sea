@@ -1,76 +1,116 @@
-# NxNodeSea
+# @getlarge/nx-node-sea
 
-<a alt="Nx logo" href="https://nx.dev" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="45"></a>
+A plugin for [Nx](https://nx.dev) that provides integration with [Node.js Single Executable Applications (SEA)](https://nodejs.org/api/single-executable-applications.html).
 
-✨ Your new, shiny [Nx workspace](https://nx.dev) is almost ready ✨.
+## Overview
 
-Run `npx nx graph` to visually explore what got created. Now, let's get you up to speed!
+This plugin helps you create Node.js Single Executable Applications (SEA) within your Nx workspace. It automates the process of generating SEA preparation blobs and creating standalone executables that bundle your Node.js application.
 
-## Finish your CI setup
+## Requirements
 
-[Click here to finish setting up your workspace!](https://cloud.nx.app/connect/oTjir14WOJ)
+- Node.js 20 or higher (SEA feature requirement)
+- Nx 20.0.6 or higher
 
-## Run tasks
+## Installation
 
-To run tasks with Nx use:
-
-```sh
-npx nx <target> <project-name>
+```bash
+npm install --save-dev @getlarge/nx-node-sea
 ```
 
-For example:
+## Usage
 
-```sh
-npx nx build myproject
+### 1. Create a sea-config.json file
+
+Create a `sea-config.json` file in your project's root directory:
+
+```json
+{
+  "main": "dist/your-app/main.js",
+  "output": "dist/your-app/main.blob",
+  "disableExperimentalSEAWarning": false,
+  "useSnapshot": false,
+  "useCodeCache": false
+}
 ```
 
-These targets are either [inferred automatically](https://nx.dev/concepts/inferred-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) or defined in the `project.json` or `package.json` files.
+### 2. Configure the plugin in nx.json
 
-[More about running tasks in the docs &raquo;](https://nx.dev/features/run-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+Add the plugin configuration to your `nx.json` file:
 
-## Add new projects
-
-While you could add new projects to your workspace manually, you might want to leverage [Nx plugins](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) and their [code generation](https://nx.dev/features/generate-code?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) feature.
-
-To install a new plugin you can use the `nx add` command. Here's an example of adding the React plugin:
-
-```sh
-npx nx add @nx/react
+```json
+{
+  "plugins": [
+    {
+      "plugin": "@getlarge/nx-node-sea",
+      "options": {
+        "seaTargetName": "sea-build",
+        "buildTarget": "build"
+      }
+    }
+  ]
+}
 ```
 
-Use the plugin's generator to create new projects. For example, to create a new React app or library:
+> **Note:** The `buildTarget` option specifies the target that will be used to build your application before creating the SEA. The default value is `"build"`.
 
-```sh
-# Genenerate an app
-npx nx g @nx/react:app demo
+### 3. Build your SEA
 
-# Generate a library
-npx nx g @nx/react:lib some-lib
+```bash
+nx run your-app:sea-build
 ```
 
-You can use `npx nx list` to get a list of installed plugins. Then, run `npx nx list <plugin-name>` to learn about more specific capabilities of a particular plugin. Alternatively, [install Nx Console](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) to browse plugins and generators in your IDE.
+This will:
 
-[Learn more about Nx plugins &raquo;](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) | [Browse the plugin registry &raquo;](https://nx.dev/plugin-registry?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+1. Build your application using the specified build target
+2. Generate a SEA preparation blob
+3. Create a standalone executable
 
-[Learn more about Nx on CI](https://nx.dev/ci/intro/ci-with-nx#ready-get-started-with-your-provider?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+## Configuration Options
 
-## Install Nx Console
+### Plugin Options
 
-Nx Console is an editor extension that enriches your developer experience. It lets you run tasks, generate code, and improves code autocompletion in your IDE. It is available for VSCode and IntelliJ.
+| Option          | Description                                                  | Default       |
+| --------------- | ------------------------------------------------------------ | ------------- |
+| `buildTarget`   | The target to build your application before creating the SEA | `"build"`     |
+| `seaTargetName` | The name of the target that will be created to build the SEA | `"sea-build"` |
 
-[Install Nx Console &raquo;](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+### SEA Config Options
 
-## Useful links
+| Option                          | Description                                          | Required |
+| ------------------------------- | ---------------------------------------------------- | -------- |
+| `main`                          | Path to the main JavaScript file of your application | Yes      |
+| `output`                        | Path where the SEA blob will be generated            | Yes      |
+| `disableExperimentalSEAWarning` | Disable warnings about experimental feature          | No       |
+| `useSnapshot`                   | Use V8 snapshot for faster startup                   | No       |
+| `useCodeCache`                  | Use code cache for faster startup                    | No       |
+| `assets`                        | Record of assets to include in the blob              | No       |
 
-Learn more:
+## Platform Support
 
-- [Learn about Nx on CI](https://nx.dev/ci/intro/ci-with-nx?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Releasing Packages with Nx release](https://nx.dev/features/manage-releases?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [What are Nx plugins?](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+The plugin automatically handles platform-specific differences for:
 
-And join the Nx community:
+- Linux
+- macOS (includes code signing)
+- Windows
 
-- [Discord](https://go.nx.dev/community)
-- [Follow us on X](https://twitter.com/nxdevtools) or [LinkedIn](https://www.linkedin.com/company/nrwl)
-- [Our Youtube channel](https://www.youtube.com/@nxdevtools)
-- [Our blog](https://nx.dev/blog?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+## Learn More
+
+- [Node.js Single Executable Applications](https://nodejs.org/api/single-executable-applications.html)
+- [Nx Build System](https://nx.dev/features/build)
+- [Postject](https://github.com/nodejs/postject) - Used for injecting the blob into the executable
+
+## Example Project Structure
+
+```
+my-app/
+├── sea-config.json
+├── project.json
+└── src/
+    └── main.ts
+```
+
+The plugin will create a standalone executable in the directory specified in `sea-config.json` (`output`).
+
+On macOS and Linux, the binary will be named `node`. On Windows, it will be named `node.exe`.
+
+You can find a complete working example in the e2e tests.
