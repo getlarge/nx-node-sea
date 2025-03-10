@@ -1,3 +1,7 @@
+[![CI](https://github.com/getlarge/nx-node-sea/actions/workflows/ci.yml/badge.svg)](https://github.com/getlarge/nx-node-sea/actions/workflows/ci.yml)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=getlarge_nx-node-sea&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=getlarge_nx-node-sea)
+[![npm](https://img.shields.io/npm/v/@getlarge/nx-node-sea.svg?style=flat)](https://npmjs.org/package/@getlarge/nx-node-sea)
+
 # @getlarge/nx-node-sea
 
 A plugin for [Nx](https://nx.dev) that provides integration with [Node.js Single Executable Applications (SEA)](https://nodejs.org/api/single-executable-applications.html).
@@ -96,7 +100,8 @@ The plugin automatically handles platform-specific differences for:
 ## Learn More
 
 - [Node.js Single Executable Applications](https://nodejs.org/api/single-executable-applications.html)
-- [Nx Build System](https://nx.dev/features/build)
+- [Nx Tasks Pipeline](https://nx.dev/concepts/task-pipeline-configuration#what-is-a-task-pipeline)
+- [Nx Inferred Tasks](https://nx.dev/concepts/inferred-taskshttps://nx.dev/concepts/inferred-tasks)
 - [Postject](https://github.com/nodejs/postject) - Used for injecting the blob into the executable
 
 ## Example Project Structure
