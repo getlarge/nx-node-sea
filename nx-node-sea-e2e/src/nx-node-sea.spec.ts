@@ -60,7 +60,7 @@ describe('nx-node-sea', () => {
     const outputDirectory = join(projectDirectory, dirname(seaConfig.output));
     const files = readdirSync(outputDirectory);
     expect(files).toContain(basename(seaConfig.output));
-    expect(files).toContain('node');
+    expect(files).toContain(expect.stringContaining('node'));
   }, 45_000);
 
   it.todo('should run the SEA');

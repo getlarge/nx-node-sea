@@ -205,7 +205,6 @@ function getSeaCommands(options: {
       'node --experimental-sea-config {projectRoot}/sea-config.json',
       `node -e "require('fs').copyFileSync(process.execPath, 'main.exe')"`,
       ...(sign ? [`signtool remove /s 'main.exe' `] : []),
-      // TODO: check if powershell or command prompt
       `npx postject main.exe NODE_SEA_BLOB ${_blobPath} --sentinel-fuse NODE_SEA_FUSE_fce680ab2cc467b6e072b8b5df1996b2`,
       ...(sign ? [`signtool sign /fd SHA256 main.exe`] : []),
       `mv main.exe ${_nodeBinPath}`,
