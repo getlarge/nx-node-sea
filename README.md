@@ -113,4 +113,4 @@ The plugin will create a standalone executable in the directory specified in `se
 
 On macOS and Linux, the binary will be named `node`. On Windows, it will be named `node.exe`.
 
-You can find a complete working example in the e2e tests.
+You can find a complete working example in the [node-sea-demo repository](https://github.com/getlarge/node-sea-demo).
