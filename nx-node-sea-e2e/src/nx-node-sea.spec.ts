@@ -6,6 +6,7 @@ import { inspect } from 'node:util';
 import { NxJsonConfiguration, readJsonFile, writeJsonFile } from '@nx/devkit';
 
 import type { NodeSeaPluginOptions, NodeSeaOptions } from 'nx-node-sea';
+import { platform } from 'node:process';
 
 describe('nx-node-sea', () => {
   let projectDirectory: string;
@@ -60,7 +61,7 @@ describe('nx-node-sea', () => {
     const outputDirectory = join(projectDirectory, dirname(seaConfig.output));
     const files = readdirSync(outputDirectory);
     expect(files).toContain(basename(seaConfig.output));
-    expect(files).toContain(expect.stringContaining('node'));
+    expect(files).toContain(platform === 'win32' ? 'node.exe' : 'node');
   }, 45_000);
 
   it.todo('should run the SEA');
