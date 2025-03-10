@@ -98,13 +98,14 @@ function createTestProject() {
   );
 
   // mock the build output
-  mkdirSync(join(projectDirectory, 'dist', projectName), {
-    recursive: true,
-  });
+  const buildOutputDirectory = join(projectDirectory, 'dist', projectName);
+  mkdirSync(buildOutputDirectory, { recursive: true });
   writeFileSync(
-    join(projectDirectory, 'dist', projectName, 'main.js'),
+    join(buildOutputDirectory, 'main.js'),
     'console.log("Hello World");'
   );
+
+  console.log(`Created dummy build output in "${buildOutputDirectory}"`);
 
   return projectDirectory;
 }

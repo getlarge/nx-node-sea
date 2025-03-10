@@ -202,11 +202,12 @@ function getSeaCommands(options: {
     );
     const _blobPath = blobPath.replaceAll(posix.sep, win32.sep);
     return [
-      `node -e "require('fs').copyFileSync(process.execPath, '${_nodeBinPath}')"`,
-      ...(sign ? [`signtool remove /s '${_nodeBinPath}' `] : []),
+      `node -e "require('fs').copyFileSync(process.execPath, 'node.exe')"`,
+      ...(sign ? [`signtool remove /s 'node.exe' `] : []),
       // TODO: check if powershell or command prompt
-      `npx postject ${_nodeBinPath} NODE_SEA_BLOB ${_blobPath} \` --sentinel-fuse NODE_SEA_FUSE_fce680ab2cc467b6e072b8bß5df1996b2`,
-      ...(sign ? [`signtool sign /fd SHA256 ${_nodeBinPath}`] : []),
+      `npx postject node.exe NODE_SEA_BLOB ${_blobPath} \` --sentinel-fuse NODE_SEA_FUSE_fce680ab2cc467b6e072b8bß5df1996b2`,
+      ...(sign ? [`signtool sign /fd SHA256 node.exe`] : []),
+      `mv node.exe ${_nodeBinPath}`,
     ];
   } else {
     throw new Error(`Unsupported platform: ${platform}`);
