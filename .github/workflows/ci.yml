@@ -35,11 +35,11 @@ jobs:
       - run: npx nx format:check
       - run: npx nx affected -t lint test build
 
-      - name: Upload coverage reports
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage
-          path: coverage
+      # - name: Upload coverage reports
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: coverage
+      #     path: coverage
 
   e2e:
     needs: main
@@ -90,11 +90,11 @@ jobs:
         with:
           path: nx-node-sea/package.json
 
-      - name: Retrieve coverage
-        uses: actions/download-artifact@v4
-        with:
-          name: coverage-${{ matrix.node-version }}
-          path: ./coverage
+      # - name: Retrieve coverage
+      #   uses: actions/download-artifact@v4
+      #   with:
+      #     name: coverage-${{ matrix.node-version }}
+      #     path: ./coverage
 
       - name: SonarCloud Scan
         uses: SonarSource/sonarqube-scan-action@v5.0.0
