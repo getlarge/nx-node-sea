@@ -1,11 +1,12 @@
 import { execSync, spawn } from 'node:child_process';
 import { once } from 'node:events';
-import { mkdirSync, readdirSync, rmSync } from 'node:fs';
+import { mkdirSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { join, dirname, basename } from 'node:path';
 import { inspect } from 'node:util';
 import { NxJsonConfiguration, readJsonFile, writeJsonFile } from '@nx/devkit';
 
 import type { NodeSeaPluginOptions, NodeSeaOptions } from 'nx-node-sea';
+import { platform } from 'node:process';
 
 describe('nx-node-sea', () => {
   let projectDirectory: string;
@@ -16,14 +17,14 @@ describe('nx-node-sea', () => {
 
     // The plugin has been built and published to a local registry in the jest globalSetup
     // Install the plugin built with the latest source code into the test repo
-    execSync(`npm install nx-node-sea@e2e`, {
+    execSync(`npm install @getlarge/nx-node-sea@e2e`, {
       cwd: projectDirectory,
       stdio: 'inherit',
       env: process.env,
     });
     updateNxJson(projectDirectory);
     seaConfig = createSeaConfig(projectDirectory);
-  }, 10_000);
+  }, 15_000);
 
   afterAll(() => {
     // Cleanup the test project
@@ -35,17 +36,18 @@ describe('nx-node-sea', () => {
 
   it('should be installed', () => {
     // npm ls will fail if the package is not installed properly
-    execSync('npm ls nx-node-sea', {
+    execSync('npm ls @getlarge/nx-node-sea', {
       cwd: projectDirectory,
       stdio: 'inherit',
     });
   });
 
   it('should build the SEA', async () => {
-    const cp = spawn('nx', ['run', 'sea-build'], {
+    const cp = spawn('nx', ['run', 'sea-build', '--verbose'], {
       cwd: projectDirectory,
       stdio: 'inherit',
-      timeout: 10_000,
+      timeout: 35_000,
+      shell: true,
     });
     cp.stdout?.on('data', (data) => {
       console.log(data.trim().toString());
@@ -59,8 +61,8 @@ describe('nx-node-sea', () => {
     const outputDirectory = join(projectDirectory, dirname(seaConfig.output));
     const files = readdirSync(outputDirectory);
     expect(files).toContain(basename(seaConfig.output));
-    expect(files).toContain('node');
-  }, 15_000);
+    expect(files).toContain(platform === 'win32' ? 'node.exe' : 'node');
+  }, 45_000);
 
   it.todo('should run the SEA');
 });
@@ -95,6 +97,17 @@ function createTestProject() {
   console.log(
     inspect(readJsonFile(join(projectDirectory, 'project.json')), { depth: 3 })
   );
+
+  // mock the build output
+  const buildOutputDirectory = join(projectDirectory, 'dist', projectName);
+  mkdirSync(buildOutputDirectory, { recursive: true });
+  writeFileSync(
+    join(buildOutputDirectory, 'main.js'),
+    'console.log("Hello World");'
+  );
+
+  console.log(`Created dummy build output in "${buildOutputDirectory}"`);
+
   return projectDirectory;
 }
 
@@ -104,7 +117,7 @@ function updateNxJson(projectDirectory: string): void {
   );
   nxJson.plugins ??= [];
   nxJson.plugins.push({
-    plugin: 'nx-node-sea',
+    plugin: '@getlarge/nx-node-sea',
     options: {
       seaTargetName: 'sea-build',
       buildTarget: 'build',
