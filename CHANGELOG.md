@@ -24,7 +24,7 @@
 - update file existence check to use stringContaining matcher ([8096a62](https://github.com/getlarge/nx-node-sea/commit/8096a62))
 - update file existence check to handle platform-specific executable names ([b7898d5](https://github.com/getlarge/nx-node-sea/commit/b7898d5))
 
-### ❤️  Thank You
+### ❤️ Thank You
 
 - getlarge
 
@@ -43,6 +43,6 @@
 
 - make plugin platform aware ([1fa8ce5](https://github.com/getlarge/nx-node-sea/commit/1fa8ce5))
 
-### ❤️  Thank You
+### ❤️ Thank You
 
 - getlarge

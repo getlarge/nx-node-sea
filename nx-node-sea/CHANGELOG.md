@@ -16,7 +16,7 @@
 - update CI cache key and correct command syntax in plugin ([2016c2f](https://github.com/getlarge/nx-node-sea/commit/2016c2f))
 - add condition to bypass cache operations when NX_CACHE_PROJECT_GRAPH is false ([bdd69f3](https://github.com/getlarge/nx-node-sea/commit/bdd69f3))
 
-### ❤️  Thank You
+### ❤️ Thank You
 
 - getlarge
 
@@ -31,6 +31,6 @@
 
 - make plugin platform aware ([1fa8ce5](https://github.com/getlarge/nx-node-sea/commit/1fa8ce5))
 
-### ❤️  Thank You
+### ❤️ Thank You
 
 - getlarge
