@@ -9,7 +9,7 @@ import {
 } from '@nx/devkit';
 import { calculateHashForCreateNodes } from '@nx/devkit/src/utils/calculate-hash-for-create-nodes';
 import { existsSync } from 'node:fs';
-import { dirname, join } from 'node:path';
+import { dirname, join, posix, win32 } from 'node:path';
 import { platform, versions } from 'node:process';
 import { combineGlobPatterns } from 'nx/src/utils/globs';
 import { workspaceDataDirectory } from 'nx/src/utils/cache-directory';
@@ -196,14 +196,17 @@ function getSeaCommands(options: {
       `npx postject ${nodeBinPath} NODE_SEA_BLOB ${blobPath} --sentinel-fuse NODE_SEA_FUSE_fce680ab2cc467b6e072b8b5df1996b2`,
     ];
   } else if (platform === 'win32') {
-    const _nodeBinPath = 'node.exe';
+    const _nodeBinPath = join(
+      dirname(nodeBinPath.replaceAll(posix.sep, win32.sep)),
+      'node.exe'
+    );
+    const _blobPath = blobPath.replaceAll(posix.sep, win32.sep);
     return [
       `node -e "require('fs').copyFileSync(process.execPath, '${_nodeBinPath}')"`,
       ...(sign ? [`signtool remove /s '${_nodeBinPath}' `] : []),
       // TODO: check if powershell or command prompt
-      `npx postject ${_nodeBinPath} NODE_SEA_BLOB ${blobPath} \` --sentinel-fuse NODE_SEA_FUSE_fce680ab2cc467b6e072b8bß5df1996b2`,
+      `npx postject ${_nodeBinPath} NODE_SEA_BLOB ${_blobPath} \` --sentinel-fuse NODE_SEA_FUSE_fce680ab2cc467b6e072b8bß5df1996b2`,
       ...(sign ? [`signtool sign /fd SHA256 ${_nodeBinPath}`] : []),
-      `mv ${_nodeBinPath} ${join(dirname(nodeBinPath), _nodeBinPath)}`,
     ];
   } else {
     throw new Error(`Unsupported platform: ${platform}`);
