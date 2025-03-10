@@ -3,7 +3,14 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {},
-  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/getlarge/nx-node-sea"
+  },
+  "author": {
+    "email": "ed@getlarge.eu",
+    "name": "Edouard Maleix"
+  },
   "dependencies": {
     "@nx/devkit": "20.0.6",
     "postject": "^1.0.0-alpha.6",
